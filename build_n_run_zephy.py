@@ -1,9 +1,27 @@
 import argparse
 import os.path
+import subprocess
 
 
 def build_zephyr(board, path):
-    # west build -p auto -b <your-board-name> samples/basic/blinky
+    command = f'west build -p always -b {board} {path}'  # command to be executed
+
+    res = subprocess.call(command, shell=True)
+    # the method returns the exit code
+
+    print("Returned Value: ", res)
+    return res
+    pass
+
+
+def run_flash():
+    command = f'west flash'  # command to be executed
+
+    res = subprocess.call(command, shell=True)
+    # the method returns the exit code
+
+    print("Returned Value: ", res)
+    return res
     pass
 
 
@@ -26,9 +44,16 @@ if __name__ == '__main__':
         exit(2)
         pass
 
-    build_zephyr(board=args.board,  path=args.path)
+    if not build_zephyr(board=args.board, path=args.path) == 0:
+        print("error in build")
+        exit(3)
+        pass
 
+    input("press enter to flash")
+    if not run_flash() == 0:
+        print("error in flash")
+        exit(3)
+        pass
 
-    print(args.board)
-    print(args.path)
-    pass
+    print(f"flashed {args.path} on {args.board} successfully")
+    exit(0)
